@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    {{- include "common.labels" . | nindent 4 }}
+data:
+  spring.security.oauth2.resourceserver.jwt.issuer-uri: https://{{ .Values.x.keycloak.host }}/auth/realms/x
+{{ .Values.globalProperties | indent 2 }}

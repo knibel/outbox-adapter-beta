@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: outbox-kafka-adapter
+  banner:
+    location: classpath:/banner.txt
+
+logging:
+  level:
+    org.apache.kafka: WARN
+    kafka: WARN
+
