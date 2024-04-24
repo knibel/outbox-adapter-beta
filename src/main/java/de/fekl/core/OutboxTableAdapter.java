@@ -1,26 +1,36 @@
 package de.fekl.core;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
-public class OutboxTableAdapter<I, O extends MappedRow<?>> {
+public class OutboxTableAdapter<O extends MappedRow<?>> {
 
-    private final OutboxTableConfig config;
+    private final OutboxTableAdapterConfig config;
     private final ResultPublisher<O> resultPublisher;
-    private final OutboxTableRepository<I> repository;
-    private final RowMapper<I, O> rowMapper;
+    private final OutboxTableRepository repository;
+    private final RowMapper<O> rowMapper;
 
     void processNextRows() {
-        var fetchedRows = repository.fetchRows();
-        List<O> mappedRows = rowMapper.map(fetchedRows);
+        try {
+            var fetchedRows = repository.fetchRows();
+            List<O> mappedRows = rowMapper.map(fetchedRows);
 
-        if (config.batchSize() > 1) {
-            processInBatches(mappedRows);
-        } else {
-            processOneByOne(mappedRows);
+            if (config.batchSize() > 1) {
+                processInBatches(mappedRows);
+            } else {
+                processOneByOne(mappedRows);
+            }
+
+        } catch (Exception e) {
+            if (config.errorHandling() == ErrorHandling.LOG) {
+                log.warn("Error processing rows", e);
+            } else
+                throw e;
         }
     }
 

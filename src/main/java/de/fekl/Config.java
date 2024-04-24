@@ -5,14 +5,13 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import de.fekl.core.MappedRow;
 import de.fekl.core.OutboxTableAdapter;
 import de.fekl.jdbc.JdbcToJsonNodeOutboxTableRepository;
-import de.fekl.jdbc.RowMapToJsonNodeMapper;
 import de.fekl.kafka.KafkaResultPublisher;
+import de.fekl.support.RowMapToJsonNodeMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class Config {
@@ -23,7 +22,7 @@ public class Config {
     }
 
     @Bean
-    List<OutboxTableAdapter<List<Map<String, Object>>, MappedRow<JsonNode>>> outboxTableAdapters(
+    List<OutboxTableAdapter<MappedRow<JsonNode>>> outboxTableAdapters(
             ApplicationConfigurationProperties configurationProperties,
             JdbcTemplate jdbcTemplate,
             JsonMapper jsonMapper
@@ -34,12 +33,12 @@ public class Config {
                 .toList();
     }
 
-    private static OutboxTableAdapter<List<Map<String, Object>>, MappedRow<JsonNode>> createAdapter(
+    private static OutboxTableAdapter<MappedRow<JsonNode>> createAdapter(
             JdbcTemplate jdbcTemplate,
             JsonMapper jsonMapper,
             ApplicationConfigurationProperties.AdapterConfig adapterConfig) {
         return new OutboxTableAdapter<>(
-                adapterConfig.table(),
+                adapterConfig.adapter(),
                 new KafkaResultPublisher(adapterConfig.kafka()),
                 new JdbcToJsonNodeOutboxTableRepository(adapterConfig.table(), jdbcTemplate),
                 new RowMapToJsonNodeMapper(adapterConfig.table().idColumn(), jsonMapper)

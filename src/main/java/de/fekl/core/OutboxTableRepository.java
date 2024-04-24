@@ -1,10 +1,11 @@
 package de.fekl.core;
 
 import java.util.List;
+import java.util.Map;
 
-public interface OutboxTableRepository<T> {
+public interface OutboxTableRepository {
 
-    T fetchRows();
+    List<Map<String, Object>> fetchRows();
 
     void deleteRow(Object rowId);
 

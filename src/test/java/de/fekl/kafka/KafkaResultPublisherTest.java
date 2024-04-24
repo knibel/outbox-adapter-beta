@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import de.fekl.core.MappedRow;
 import de.fekl.core.MappedRowImpl;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.instancio.junit.InstancioExtension;
 import org.instancio.junit.InstancioSource;
@@ -18,6 +19,7 @@ import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static de.fekl.kafka.KafkaResultPublisherTest.TOPIC;
@@ -45,7 +47,10 @@ class KafkaResultPublisherTest {
     @BeforeAll
     void beforeAll(EmbeddedKafkaBroker broker) {
         consumer = createConsumer(broker);
-        cut = new KafkaResultPublisher(new KafkaConfig(broker.getBrokersAsString(), TOPIC));
+        cut = new KafkaResultPublisher(Map.of(
+                KafkaResultPublisher.TOPIC_CONFIG_KEY, TOPIC,
+                ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, broker.getBrokersAsString()
+        ));
     }
 
     @ParameterizedTest

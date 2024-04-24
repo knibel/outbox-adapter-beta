@@ -16,6 +16,7 @@ import org.apache.kafka.common.serialization.StringSerializer;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -23,7 +24,9 @@ import java.util.concurrent.Future;
 @RequiredArgsConstructor
 public class KafkaResultPublisher implements ResultPublisher<MappedRow<JsonNode>> {
 
-    private final KafkaConfig config;
+    public static final String TOPIC_CONFIG_KEY = "topic";
+    
+    private final Map<String, Object> config;
 
     @Getter(lazy = true, value = AccessLevel.PRIVATE)
     private final KafkaProducer<String, String> producer = initProducer();
@@ -55,17 +58,17 @@ public class KafkaResultPublisher implements ResultPublisher<MappedRow<JsonNode>
     }
 
     private ProducerRecord<String, String> createRecord(MappedRow<JsonNode> mappedRow) {
-        return new ProducerRecord<>(config.topic(), mappedRow.rowId().toString(), mappedRow.mappedValue().toString());
+        return new ProducerRecord<>((String) config.get(TOPIC_CONFIG_KEY), mappedRow.rowId().toString(), mappedRow.mappedValue().toString());
     }
 
     @SneakyThrows(UnknownHostException.class)
     private Properties createClientProperties() {
         var properties = new Properties();
         properties.put(ProducerConfig.CLIENT_ID_CONFIG, InetAddress.getLocalHost().getHostName());
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.bootstrapServers());
         properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
+        properties.putAll(config);
         return properties;
     }
 }

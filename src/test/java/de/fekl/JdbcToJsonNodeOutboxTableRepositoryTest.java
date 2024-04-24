@@ -1,8 +1,7 @@
 package de.fekl;
 
-import de.fekl.core.AckMode;
-import de.fekl.core.OutboxTableConfig;
 import de.fekl.jdbc.JdbcToJsonNodeOutboxTableRepository;
+import de.fekl.jdbc.OutboxTableConfig;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,7 @@ class JdbcToJsonNodeOutboxTableRepositoryTest {
                         "id",
                         "status",
                         "DONE",
-                        3,
-                        1,
-                        AckMode.DELETE),
+                        3),
                 jdbcTemplate
         );
     }

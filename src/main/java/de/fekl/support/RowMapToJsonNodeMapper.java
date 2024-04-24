@@ -1,4 +1,4 @@
-package de.fekl.jdbc;
+package de.fekl.support;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
-public class RowMapToJsonNodeMapper implements RowMapper<List<Map<String, Object>>, MappedRow<JsonNode>> {
+public class RowMapToJsonNodeMapper implements RowMapper<MappedRow<JsonNode>> {
 
     private final String idColumnName;
     private final ObjectMapper mapper;
